@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MVCAuthentication.Data;
+using MVCAuthentication.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,16 +13,14 @@ builder.Services.AddDbContext<DataContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DataContext"))
     );
 
-builder.Services.AddIdentityApiEndpoints<IdentityUser>(
-    options =>
-    {
-        options.Password.RequiredUniqueChars = 0;
-        options.Password.RequireUppercase = false;
-        options.Password.RequiredLength = 8;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireLowercase = false;
-    })// not necessarily a point
-    .AddEntityFrameworkStores<DataContext>();
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddCookie(JwtBearerDefaults.AuthenticationScheme, o =>
+//{
+//    o.Cookie.Name = "JwtBearerDefaults.AuthenticationScheme";
+//    o.ExpireTimeSpan = TimeSpan.FromSeconds(20);
+//});
+
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+    .AddEntityFrameworkStores<DataContext>().AddDefaultTokenProviders();
 
 var app = builder.Build();
 
